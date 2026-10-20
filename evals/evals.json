@@ -1,0 +1,44 @@
+{
+  "skill_name": "xinya-aliyun-deploy",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Offline mock/dry-run only: do not connect to any real ECS or ACR, do not read real credentials or PEM contents, and do not mutate services. Using fixture host 203.0.113.10, user root, and a fixture PEM path, show how the xinya read-only status workflow would be invoked and what SSH command/options it would issue. Simulate an SSH failure and explain the resulting behavior. This is status inspection only: do not deploy, restart, heal, or otherwise self-remediate.",
+      "expected_output": "A dry-run status invocation that uses the fixture PEM with non-interactive BatchMode, contains no password/askpass mechanism, and stops/report failure without self-healing.",
+      "files": [],
+      "assertions": [
+        "Uses PEM key authentication and includes SSH option BatchMode=yes.",
+        "Does not use ECS_PASSWORD, SSH_ASKPASS, an askpass file, sshpass, or password authentication.",
+        "Performs only read-only status checks and does not restart, recreate, deploy, or heal services.",
+        "A simulated SSH/status failure is reported and causes the workflow to stop rather than self-remediate.",
+        "All execution is explicitly offline against mocks/fixtures; no real ECS or ACR connection occurs."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Offline mock/dry-run only: do not connect to any real ECS or ACR, do not log in to a registry, do not build or push images, and do not change live containers. Plan and simulate a full-stack xinya release of version v1.4.0. Show the exact app and web image tags, the mocked compose operations, and the failure recovery commands/state. The release and recovery must touch application services only; MySQL, Redis, their volumes, and upload data must remain untouched.",
+      "expected_output": "A v1.4.0 dry-run with explicit app and web tags, app/web-only compose changes, and failure recovery that restores both prior tags without destructive volume commands.",
+      "files": [],
+      "assertions": [
+        "Explicitly identifies both the app image tag v1.4.0 and the web image tag v1.4.0.",
+        "Deployment operations target only xinya-app and xinya-web application services, not MySQL or Redis.",
+        "Failure recovery records and restores both the previous app tag and the previous web tag.",
+        "Does not run or recommend docker compose down -v, volume removal, or any data-service recreation.",
+        "All build, push, pull, SSH, and compose actions are mocked/dry-run; no real ECS or ACR connection occurs."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Offline mock/dry-run only: do not connect to any real ECS or ACR, do not read real credentials or PEM contents, and do not delete any real volume. Demonstrate the guarded xinya data-reset workflow using local mocks. Cover a successful pre-reset database backup, rejection of an empty backup artifact, the exact operator confirmation phrase, and simulated failures before destructive work. Show which mocked commands would run, but do not perform a real reset.",
+      "expected_output": "A dry-run reset that requires a verified non-empty backup and exact confirmation RESET XINYA DATA, and that never deletes volumes when backup, confirmation, or prerequisite steps fail.",
+      "files": [],
+      "assertions": [
+        "Forces a database backup before reset and verifies the resulting backup artifact is non-empty.",
+        "Rejects a missing or zero-byte backup and stops before any destructive command.",
+        "Requires the operator to enter exactly RESET XINYA DATA; any other input aborts safely.",
+        "If backup, validation, confirmation, SSH, or another prerequisite fails, no volume deletion or docker compose down -v occurs.",
+        "All commands are offline mocks/dry-run and no real ECS, ACR, container, or volume is accessed."
+      ]
+    }
+  ]
+}

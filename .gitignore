@@ -1,0 +1,16 @@
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+*.p12
+*.pfx
+*.sql
+*.sql.gz
+*.dump
+scripts/.rollback

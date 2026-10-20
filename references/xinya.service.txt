@@ -1,0 +1,35 @@
+# ============================================================
+#  xinya.service ——  systemd unit（开机自启 docker compose 栈）
+# ============================================================
+#  这个文件需要从 .txt 改名回 .service 再上传
+#
+#  安装：
+#     sudo cp xinya.service /etc/systemd/system/
+#     sudo systemctl daemon-reload
+#     sudo systemctl enable xinya.service
+#
+#  测试：
+#     sudo systemctl start xinya.service   # 等价 docker compose up -d
+#     sudo systemctl stop xinya.service    # 等价 docker compose down
+#     sudo journalctl -u xinya.service     # 排错看日志
+# ============================================================
+
+[Unit]
+Description=Xinya Ruoyi Docker Compose Stack
+Documentation=https://github.com/your-org/xinya_ry
+Requires=docker.service
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/opt/xinya/docker
+EnvironmentFile=-/opt/xinya/.env
+ExecStart=/usr/bin/docker compose up -d
+ExecStop=/usr/bin/docker compose down
+ExecReload=/usr/bin/docker compose restart
+RemainAfterExit=yes
+TimeoutStartSec=300
+
+[Install]
+WantedBy=multi-user.target
